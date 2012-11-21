@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2012 Nolan Lum <nol888@gmail.com>
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+ 
+    <!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+    
+    <!-- CalNet CAS Configuration -->
+    <security:http entry-point-ref="casAuthenticationEntryPoint" use-expressions="true">
+    	<security:intercept-url pattern="/cas-logout.jsp" access="permitAll"/>
+    	<security:intercept-url pattern="/casfailed.jsp" access="permitAll"/>
+    	
+    	<security:intercept-url pattern="/" access="hasRole('ROLE_USER')" />
+    	
+    	<security:custom-filter ref="requestSingleLogoutFilter" before="LOGOUT_FILTER"/>
+        <security:custom-filter ref="singleLogoutFilter" before="CAS_FILTER"/>
+        <security:logout logout-success-url="/cas-logout.jsp"/>
+	    <security:custom-filter position="CAS_FILTER" ref="casAuthenticationFilter" />
+	</security:http>
+	
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider ref="casAuthenticationProvider" />
+	</security:authentication-manager>
+
+	<!-- CAS Entry Point -->
+	<bean id="casAuthenticationEntryPoint" class="org.springframework.security.cas.web.CasAuthenticationEntryPoint">
+		<property name="loginUrl" value="https://${cas.server.host}/cas/login" />
+		<property name="serviceProperties" ref="serviceProperties" />
+	</bean>
+
+	<bean id="serviceProperties" class="org.springframework.security.cas.ServiceProperties">
+		<property name="service" value="http://${cas.service.host}/asucfund/j_spring_cas_security_check" />
+	</bean>
+
+	<!-- This filter sets basic CAS parameters. -->
+	<bean id="casAuthenticationFilter" class="org.springframework.security.cas.web.CasAuthenticationFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="authenticationFailureHandler">
+			<bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+				<property name="defaultFailureUrl" value="/casfailed.jsp" />
+			</bean>
+		</property>
+	</bean>
+    <!-- This filter handles a Single Logout Request from the CAS Server -->
+    <bean id="singleLogoutFilter" class="org.jasig.cas.client.session.SingleSignOutFilter"/>
+    <!-- This filter redirects to the CAS Server to signal Single Logout should be performed -->
+    <bean id="requestSingleLogoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter"
+        p:filterProcessesUrl="/j_spring_cas_security_logout">
+        <constructor-arg value="https://${cas.server.host}/cas/logout"/>
+        <constructor-arg>
+            <bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler"/>
+        </constructor-arg>
+    </bean>
+
+	<bean id="casAuthenticationProvider"
+		class="org.springframework.security.cas.authentication.CasAuthenticationProvider"
+		p:serviceProperties-ref="serviceProperties"
+		p:key="n6w3l46364360kglba3n6pwo6k3woi6uw3i6w3ik6nhlthgnsdkljgnskjf">
+		<property name="authenticationUserDetailsService">
+            <bean class="com.caa.ASUCFund.auth.CalNetUserDetailService" />
+        </property>
+		<property name="ticketValidator">
+			<bean class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">
+				<constructor-arg index="0" value="https://${cas.server.host}/cas" />
+			</bean>
+		</property>
+	</bean>
+    
+    <!-- Configuration for the environment can be overriden by system properties -->
+    <context:property-placeholder system-properties-mode="OVERRIDE" properties-ref="environment"/>
+    <util:properties id="environment">
+        <prop key="cas.service.host">localhost:8080</prop>
+        <prop key="cas.server.host">auth.berkeley.edu</prop>
+    </util:properties>
+</beans>
