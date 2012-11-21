@@ -13,6 +13,6 @@ public class HomeController {
 	public String home() {
 		log.info("herp");
 
-		return "WEB-INF/views/home.jsp";
+		return "home";
 	}
 }
