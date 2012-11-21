@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.caa.ASUCFund.auth;
+package com.caa.koko.auth;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +40,7 @@ public class CalNetUserDetailService implements AuthenticationUserDetailsService
 		// In the Near Future, LDAP should only be queried if our ORM doesn't know
 		// anything about the user.
 
-		return new CalNetUserDetails();
+		return new CalNetUserDetails(uid);
 	}
-
 
 }

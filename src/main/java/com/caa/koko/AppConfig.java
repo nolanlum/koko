@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.caa.ASUCFund;
+package com.caa.koko;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-@Controller
-public class HomeController {
-	Logger log = LoggerFactory.getLogger(HomeController.class);
+@Configuration
+public class AppConfig {
 
-	@RequestMapping(value="/")
-	public String home() {
-		log.info("herp");
-
-		return "home";
+	// XXX TODO - make this mobile-aware.
+	@Bean
+	ViewResolver viewResolver() {
+		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+		resolver.setPrefix("WEB-INF/views/");
+		resolver.setSuffix(".jsp");
+		return resolver;
 	}
 }

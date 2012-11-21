@@ -13,32 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.caa.ASUCFund.auth;
+package com.caa.koko.auth;
 
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class CalNetUserDetails implements UserDetails {
 	private static final long serialVersionUID = 501260682153532712L;
 
+	private String uid;
+
+	public CalNetUserDetails(String uid) {
+		this.uid = uid;
+	}
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
+		// XXX make this actually reflect privileges.
+		return AuthorityUtils.createAuthorityList("ROLE_USER");
 	}
 
 	@Override
 	public String getPassword() {
-		// TODO Auto-generated method stub
-		return null;
+		// We don't handle passwords.
+		return "";
 	}
 
 	@Override
 	public String getUsername() {
-		// TODO Auto-generated method stub
-		return null;
+		return uid;
 	}
 
 	@Override
