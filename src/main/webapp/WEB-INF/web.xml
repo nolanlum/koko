@@ -64,10 +64,6 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-    
-    <listener>
-	    <listener-class>org.apache.tiles.extras.complete.CompleteAutoloadTilesListener</listener-class>
-	</listener>
 
 	<servlet>
 		<servlet-name>appServlet</servlet-name>
