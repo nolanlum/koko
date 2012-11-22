@@ -6,5 +6,6 @@
     </head>
     <body>
         <h1>Hello ${uid}! Let's call you ${name}.</h1>
+        Wanted to <a href="j_spring_security_logout">logout</a>? How about <a href="j_spring_cas_security_logout">CAS logout</a>?
     </body>
 </html>

@@ -58,6 +58,7 @@ public class CalNetUserDetailService implements AuthenticationUserDetailsService
 			user.setPhone("732-2-DIQUES");
 
 			s.save(user);
+			s.flush();
 			s.close();
 
 			return user;

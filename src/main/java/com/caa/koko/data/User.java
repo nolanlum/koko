@@ -39,6 +39,9 @@ public class User implements UserDetails {
 	private String email, name, phone;
 	private boolean isAdmin;
 
+	public User() {
+	}
+
 	public User(int calnetUid) {
 		this.uid = calnetUid;
 	}
