@@ -27,8 +27,15 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
- 
-    <!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+
+	<!-- Configuration for the environment can be overriden by system properties -->
+    <context:property-placeholder system-properties-mode="OVERRIDE" properties-ref="environment" ignore-unresolvable="true"/>
+    <util:properties id="environment">
+        <prop key="cas.service.host">localhost:8080</prop>
+        <prop key="cas.server.host">auth.berkeley.edu</prop>
+    </util:properties>
+
+    <import resource="hibernate.xml"/>
     
     <!-- CalNet CAS Configuration -->
     <security:http entry-point-ref="casAuthenticationEntryPoint" use-expressions="true">
@@ -82,7 +89,9 @@
 		p:serviceProperties-ref="serviceProperties"
 		p:key="n6w3l46364360kglba3n6pwo6k3woi6uw3i6w3ik6nhlthgnsdkljgnskjf">
 		<property name="authenticationUserDetailsService">
-            <bean class="com.caa.koko.auth.CalNetUserDetailService" />
+            <bean class="com.caa.koko.auth.CalNetUserDetailService">
+            	<property name="sessionFactory" ref="sessionFactory" />
+            </bean>
         </property>
 		<property name="ticketValidator">
 			<bean class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">
@@ -90,11 +99,4 @@
 			</bean>
 		</property>
 	</bean>
-    
-    <!-- Configuration for the environment can be overriden by system properties -->
-    <context:property-placeholder system-properties-mode="OVERRIDE" properties-ref="environment"/>
-    <util:properties id="environment">
-        <prop key="cas.service.host">localhost:8080</prop>
-        <prop key="cas.server.host">auth.berkeley.edu</prop>
-    </util:properties>
 </beans>

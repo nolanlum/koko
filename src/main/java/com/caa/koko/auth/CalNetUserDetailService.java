@@ -15,32 +15,62 @@
  */
 package com.caa.koko.auth;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
+import com.caa.koko.data.User;
+
+@Service
 public class CalNetUserDetailService implements AuthenticationUserDetailsService<Authentication> {
-	Logger log = LoggerFactory.getLogger(CalNetUserDetailService.class);
+	private final Logger log = LoggerFactory.getLogger(CalNetUserDetailService.class);
+	private SessionFactory sessionFactory;
 
 	@Override
 	public UserDetails loadUserDetails(Authentication token) throws UsernameNotFoundException {
-		String calnetUID = token.getName();
+		String calnetUID = (String) token.getPrincipal();
 
-		return lookupCalNetUID(calnetUID);
+		return lookupCalNetUID(Integer.parseInt(calnetUID));
 	}
 
-	private CalNetUserDetails lookupCalNetUID(String uid) {
-		// TODO this should actually do something.
+	private User lookupCalNetUID(int uid) {
 		log.debug("Querying info for CalNet UID: {}", uid);
 
-		// TODO figure out Spring LDAP and flesh out CalNetUserDetails.
-		// In the Near Future, LDAP should only be queried if our ORM doesn't know
-		// anything about the user.
+		Session s = sessionFactory.openSession();
+		Object u = s.byId(User.class).load(uid);
 
-		return new CalNetUserDetails(uid);
+		if (u == null) {
+			log.debug("No existing user for '{}' found; querying LDAP.", uid);
+
+			// TODO figure out Spring LDAP and flesh out CalNetUserDetails.
+			// In the Near Future, LDAP should only be queried if our ORM doesn't know
+			// anything about the user.
+
+			User user = new User(uid);
+			user.setEmail("fake@berkeley.edu");
+			user.setName("Hurfy Durfy");
+			user.setPhone("732-2-DIQUES");
+
+			s.save(user);
+			s.close();
+
+			return user;
+		} else {
+			log.debug("Found '{}' locally, returning cached data.", uid);
+
+			s.close();
+			return (User) u;
+		}
+	}
+
+	public void setSessionFactory(SessionFactory f) {
+		this.sessionFactory = f;
 	}
 
 }

@@ -22,22 +22,26 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.caa.koko.auth.CalNetUserDetails;
+import com.caa.koko.data.User;
 
 @Controller
 public class HomeController {
-	Logger log = LoggerFactory.getLogger(HomeController.class);
+	private final Logger log = LoggerFactory.getLogger(HomeController.class);
 
 	@RequestMapping(value="/")
 	public String home(Model model) {
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String uid = "somepony";
+		String name = "Hickory Dickory Dock Diques";
 
-		if (principal instanceof CalNetUserDetails) {
-			uid = ((CalNetUserDetails) principal).getUsername();
+		if (principal instanceof User) {
+			User u = (User) principal;
+			uid = u.getUsername();
+			name = u.getName();
 		}
 
 		model.addAttribute("uid", uid);
+		model.addAttribute("name", name);
 		return "home";
 	}
 }
