@@ -18,7 +18,8 @@ package com.caa.koko;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.UrlBasedViewResolver;
+import org.springframework.web.servlet.view.tiles2.TilesConfigurer;
 
 @Configuration
 public class AppConfig {
@@ -26,9 +27,15 @@ public class AppConfig {
 	// XXX TODO - make this mobile-aware.
 	@Bean
 	ViewResolver viewResolver() {
-		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-		resolver.setPrefix("WEB-INF/views/");
-		resolver.setSuffix(".jsp");
+		UrlBasedViewResolver resolver = new UrlBasedViewResolver();
+		resolver.setViewClass(org.springframework.web.servlet.view.tiles2.TilesView.class);
 		return resolver;
+	}
+
+	@Bean
+	TilesConfigurer tilesConfigurer() {
+		TilesConfigurer configurer = new TilesConfigurer();
+		configurer.setDefinitions(new String[] { "/WEB-INF/tiles.xml" });
+		return configurer;
 	}
 }

@@ -97,44 +97,6 @@
 				 </exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-		    <groupId>org.springframework.ldap</groupId>
-		    <artifactId>spring-ldap-core-tiger</artifactId>
-		    <version>${org.springldap-version}</version>
-		    <exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				 </exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-		    <groupId>org.springframework.ldap</groupId>
-		    <artifactId>spring-ldap-odm</artifactId>
-		    <version>${org.springldap-version}</version>
-		    <exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				 </exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-		    <groupId>org.springframework.ldap</groupId>
-		    <artifactId>spring-ldap-ldif-core</artifactId>
-		    <version>${org.springldap-version}</version>
-		    <exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				 </exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-		    <groupId>org.springframework.ldap</groupId>
-		    <artifactId>spring-ldap-ldif-batch</artifactId>
-		    <version>${org.springldap-version}</version>
-		</dependency>
 		
 		<dependency>
 			<groupId>cglib</groupId>
@@ -226,6 +188,13 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>4.1.8.Final</version>
+		</dependency>
+		
+		<!-- Tiles for pretty templates. -->
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-extras</artifactId>
+			<version>2.2.2</version>
 		</dependency>
 	</dependencies>
 	<repositories>	

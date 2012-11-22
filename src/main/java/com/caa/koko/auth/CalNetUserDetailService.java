@@ -15,10 +15,14 @@
  */
 package com.caa.koko.auth;
 
+import javax.naming.NamingException;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ldap.core.DirContextAdapter;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,15 +35,20 @@ import com.caa.koko.data.User;
 public class CalNetUserDetailService implements AuthenticationUserDetailsService<Authentication> {
 	private final Logger log = LoggerFactory.getLogger(CalNetUserDetailService.class);
 	private SessionFactory sessionFactory;
+	private LdapTemplate ldapTemplate;
 
 	@Override
 	public UserDetails loadUserDetails(Authentication token) throws UsernameNotFoundException {
 		String calnetUID = (String) token.getPrincipal();
 
-		return lookupCalNetUID(Integer.parseInt(calnetUID));
+		try {
+			return lookupCalNetUID(Integer.parseInt(calnetUID));
+		} catch (NamingException e) {
+			throw new UsernameNotFoundException("LDAP query failed!", e);
+		}
 	}
 
-	private User lookupCalNetUID(int uid) {
+	private User lookupCalNetUID(int uid) throws NamingException {
 		log.debug("Querying info for CalNet UID: {}", uid);
 
 		Session s = sessionFactory.openSession();
@@ -48,14 +57,16 @@ public class CalNetUserDetailService implements AuthenticationUserDetailsService
 		if (u == null) {
 			log.debug("No existing user for '{}' found; querying LDAP.", uid);
 
-			// TODO figure out Spring LDAP and flesh out CalNetUserDetails.
-			// In the Near Future, LDAP should only be queried if our ORM doesn't know
-			// anything about the user.
+			DirContextAdapter a = (DirContextAdapter) ldapTemplate.lookup("uid=" + uid + ",ou=people");
+
+			String name = (String) a.getAttributes().get("displayName").get();
+			String email = "fake@berkeley.edu"; // TODO
+			String phone = "0000000000"; // TODO
 
 			User user = new User(uid);
-			user.setEmail("fake@berkeley.edu");
-			user.setName("Hurfy Durfy");
-			user.setPhone("732-2-DIQUES");
+			user.setEmail(email);
+			user.setName(name);
+			user.setPhone(phone);
 
 			s.save(user);
 			s.flush();
@@ -63,7 +74,7 @@ public class CalNetUserDetailService implements AuthenticationUserDetailsService
 
 			return user;
 		} else {
-			log.debug("Found '{}' locally, returning cached data.", uid);
+			log.debug("Mapped {} => '{}'.", uid, ((User) u).getName());
 
 			s.close();
 			return (User) u;
@@ -72,6 +83,10 @@ public class CalNetUserDetailService implements AuthenticationUserDetailsService
 
 	public void setSessionFactory(SessionFactory f) {
 		this.sessionFactory = f;
+	}
+
+	public void setLdapTemplate(LdapTemplate t) {
+		this.ldapTemplate = t;
 	}
 
 }
