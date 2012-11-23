@@ -18,8 +18,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.caa</groupId>
-	<artifactId>ASUC-funding-tool</artifactId>
-	<name>ASUC-funding-tool</name>
+	<artifactId>koko</artifactId>
+	<name>koko</name>
 	<packaging>war</packaging>
 	<version>0.1.0.DEVEL</version>
 	<properties>
@@ -135,12 +135,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>javax.servlet.jsp.jstl</groupId>
 			<artifactId>jstl-api</artifactId>
 			<version>1.2</version>
@@ -160,6 +154,12 @@
 			<artifactId>jstl-impl</artifactId>
 			<version>1.2</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet.jsp</groupId>
+					<artifactId>jsp-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- Jackson JSON Processor -->
